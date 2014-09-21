@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.derek.helloanthy.sexyphotoviewer.R;
 import com.derek.helloanthy.sexyphotoviewer.model.WebsiteModel;
-import com.derek.tools.HttpManager;
+import com.derek.helloanthy.sexyphotoviewer.parser.WebsiteParser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.List;
 public class HomeActivity extends Activity {
     private static int PAGE_STEP = 10; // 10 pages as a step
     private static String TAG = "homeActivity";
-
+    public static Context context;
 
     private String[] websiteLinks;
     private List<MyTask> myTasks;
@@ -32,6 +32,7 @@ public class HomeActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        context = this;
         websiteLinks = this.getResources().getStringArray(R.array.website);
         //Toast.makeText(this, websites[0], Toast.LENGTH_SHORT).show();
         myTasks = new ArrayList<MyTask>();
@@ -79,13 +80,14 @@ public class HomeActivity extends Activity {
         protected List<WebsiteModel> doInBackground(String... params) {
             int size = params.length;
             for (int i = 0; i < params.length; i++){
+                WebsiteModel wm;// = new WebsiteModel();
+//                wm.setUrl(params[i]);
+//                wm.setWebsiteContent(HttpManager.getData(params[i]));
+//                Document doc = Jsoup.parse(wm.getWebsiteContent());
 
-                WebsiteModel wm = new WebsiteModel();
-                wm.setUrl(params[i]);
-                wm.setWebsiteContent(HttpManager.getData(params[i]));
-
+                wm = WebsiteParser.parser(params[i]);
                 websiteModels.add(wm);
-                Log.v(TAG, "Retrived website content for " + i + ": " + params[i]);
+                //Log.v(TAG, "Retrived website content for " + i + ": " + params[i]);
                 onProgressUpdate(i);
             }
             return websiteModels;
@@ -98,8 +100,8 @@ public class HomeActivity extends Activity {
 
         @Override
         protected void onProgressUpdate(Integer... values) {
-            Log.v(TAG, "web page index " + values[0] + ":" + websiteLinks[values[0]] + " loaded"
-                + "\n" + websiteModels.get(values[0]).getWebsiteContent());
+//            Log.v(TAG, "web page index " + values[0] + ":" + websiteLinks[values[0]] + " loaded"
+//                + "\n" + websiteModels.get(values[0]).getWebsiteContent());
         }
 
         @Override

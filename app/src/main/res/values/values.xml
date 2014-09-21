@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <array name="type">
+        <item>激情图区</item>
+        <item>激情圖區</item>
+    </array>
+    <array name="category">
+        <item>自拍偷拍</item>
+        <item>亞洲色圖</item>
+        <item>歐美色圖</item>
+        <item>美腿絲襪</item>
+        <item>清純唯美</item>
+        <item>亂倫熟女</item>
+        <item>卡通動漫</item>
+        <item>綜合色圖</item>
+    </array>
 </resources>

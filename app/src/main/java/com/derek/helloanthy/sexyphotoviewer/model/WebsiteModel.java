@@ -1,8 +1,6 @@
 package com.derek.helloanthy.sexyphotoviewer.model;
 
-import android.graphics.Bitmap;
-
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -11,11 +9,41 @@ import java.util.Map;
  */
 public class WebsiteModel {
     private String uri = null;
+    private String charset = "UTF-8";
+    private String title;
     private String websiteContent;
     // a list of all the categories and each contain the name of the category and the links of every page
-    private List<Map<String, List<URL>>> category = null;
-    private List<Category> categories;
+    //private Map<String, List<URL>> categories = null;
+    //private List<CategoryModel> categories;
+    private Map<String, CategoryModel> categoryMap = null;
 
+    public Map<String, CategoryModel> getCategoryMap() {
+        return categoryMap;
+    }
+
+    public void setCategoryMap(Map<String, CategoryModel> categoryMap) {
+        this.categoryMap = categoryMap;
+    }
+
+    public List<String> getCategories() {
+        return new ArrayList<String>(categoryMap.keySet());
+    }
+
+    public String getCharset() {
+        return charset;
+    }
+
+    public void setCharset(String charset) {
+        this.charset = charset;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     public String getUrl() {
         return uri;
@@ -33,18 +61,7 @@ public class WebsiteModel {
         this.websiteContent = websiteContent;
     }
 
-    public class Category{
-        private URL url;
-        private WebsiteModel websiteModel;
-        private String category;
 
-    }
-    public class ImagePage {
-        private int id;
 
-        private URL pageLink;
-        private List<URL> bitmapLinks;
-        private List<Bitmap> bitmaps;
-
-    }
 }
+
