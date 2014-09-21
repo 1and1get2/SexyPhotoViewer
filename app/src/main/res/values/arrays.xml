@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="my_array">
+        <item>array 1</item>
+        <item>array 2</item>
+        <item>array 3</item>
+        <item>array 4</item>
+        <item>array 5</item>
+    </array>
+</resources>
