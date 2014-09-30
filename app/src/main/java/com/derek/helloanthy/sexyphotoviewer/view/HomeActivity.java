@@ -80,14 +80,9 @@ public class HomeActivity extends Activity {
         protected List<WebsiteModel> doInBackground(String... params) {
             int size = params.length;
             for (int i = 0; i < params.length; i++){
-                WebsiteModel wm;// = new WebsiteModel();
-//                wm.setUrl(params[i]);
-//                wm.setWebsiteContent(HttpManager.getData(params[i]));
-//                Document doc = Jsoup.parse(wm.getWebsiteContent());
-
+                WebsiteModel wm;
                 wm = WebsiteParser.parser(params[i]);
                 websiteModels.add(wm);
-                //Log.v(TAG, "Retrived website content for " + i + ": " + params[i]);
                 onProgressUpdate(i);
             }
             return websiteModels;

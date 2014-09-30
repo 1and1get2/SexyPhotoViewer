@@ -63,7 +63,7 @@ public class WebsiteParser {
                 String categoryName = children.get(i).text();
                 //Element e = children.get(i).select("li").get(0).select("a[href]").get(0);
                 String categoryUrl = uri + children.get(i).select("li").get(0).select("a[href]").get(0).attr("href");
-                Log.v(TAG, categoryName.substring(0, categoryName.length() - 2) + ": " + categoryUrl);
+                Log.v(TAG, categoryName/*.substring(0, categoryName.length() - 4)*/ + ": " + categoryUrl);
                 CategoryModel category = new CategoryModel();
                 category.setUri(categoryUrl);
                 category.setCategory(categoryName);
