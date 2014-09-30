@@ -6,9 +6,15 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.derek.helloanthy.sexyphotoviewer.R;
@@ -25,19 +31,64 @@ public class HomeActivity extends Activity {
     public static Context context;
 
     private String[] websiteLinks;
+    private List<String> websiteLinkList;
     private List<MyTask> myTasks;
     private List<WebsiteModel> websiteModels;
+
+    private DrawerLayout websiteListDrawer;
+    private ListView websiteListView;
+    private ActionBarDrawerToggle websiteListDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+//        setContentView(R.layout.activity_home);
+        setContentView(R.layout.drawerlayout);
         context = this;
         websiteLinks = this.getResources().getStringArray(R.array.website);
-        //Toast.makeText(this, websites[0], Toast.LENGTH_SHORT).show();
+        websiteLinkList = new ArrayList<String>();
+        websiteLinkList.add(getResources().getString(R.string.get_all_websites));
+        for (String s : websiteLinks){
+            websiteLinkList.add(s);
+        }
+        websiteListDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        websiteListView = (ListView) findViewById(R.id.left_drawer);
+
+        // set a custom shadow that overlays the main content when the drawer opens
+        //websiteListDrawer.setDrawerShadow(R.drawable.ic_launcher, GravityCompat.START);
+        // Set the adapter for the list view
+        websiteListView.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.website_list_item, websiteLinkList));
+        // Set the list's click listener
+        websiteListView.setOnItemClickListener(new DrawerItemClickListener());
+        //mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
         myTasks = new ArrayList<MyTask>();
         websiteModels = new ArrayList<WebsiteModel>();
+        // ActionBarDrawerToggle ties together the the proper interactions
+        // between the sliding drawer and the action bar app icon
+        websiteListDrawerToggle = new ActionBarDrawerToggle(
+                this,                  /* host Activity */
+                websiteListDrawer,         /* DrawerLayout object */
+                R.drawable.ic_launcher,  /* nav drawer image to replace 'Up' caret */
+                R.string.drawer_open,  /* "open drawer" description for accessibility */
+                R.string.drawer_close  /* "close drawer" description for accessibility */
+        ) {
+            public void onDrawerClosed(View view) {
+                getActionBar().setTitle("onDrawerClosed");
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                getActionBar().setTitle("onDrawerOpened");
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+        websiteListDrawer.setDrawerListener(websiteListDrawerToggle);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
     }
+
     protected boolean isOnline() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
@@ -69,12 +120,37 @@ public class HomeActivity extends Activity {
         } else if (id == R.id.action_settings) {
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        // The action bar home/up action should open or close the drawer.
+        // ActionBarDrawerToggle will take care of this.
+        if (websiteListDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        // Handle action buttons
+        switch(item.getItemId()) {
+
+
+            default:
+                Toast.makeText(this, "get all! id:" + id, Toast.LENGTH_LONG).show();
+                return super.onOptionsItemSelected(item);
+        }
     }
     private void requestData(String... uri){
         MyTask newTask = new MyTask();
         newTask.execute(websiteLinks);
     }
+    /* The click listner for ListView in the navigation drawer */
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            selectItem(position);
+        }
+    }
+    private void selectItem(int position) {
+        // update the main content by replacing fragments
+        Log.v(TAG, "Selected item at position: " + position);
+        websiteListDrawer.closeDrawer(websiteListView);
+    }
+
     class MyTask extends AsyncTask<String, Integer, List<WebsiteModel>>{
         @Override
         protected List<WebsiteModel> doInBackground(String... params) {
@@ -102,7 +178,7 @@ public class HomeActivity extends Activity {
         @Override
         protected void onPostExecute(List<WebsiteModel> websiteModels) {
             //super.onPostExecute(s);
-            Log.v(TAG, websiteLinks.length - myTasks.size() + 1 + "/" + websiteLinks.length + " wepages loaded");
+            Log.v(TAG, websiteLinks.length - myTasks.size() + 1 + "/" + websiteLinks.length + " webpages loaded");
             if (myTasks.size() == 0){
                 Log.v(TAG, "all web pages loaded");
             }
