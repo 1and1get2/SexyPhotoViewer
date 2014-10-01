@@ -1,6 +1,7 @@
 package com.derek.helloanthy.sexyphotoviewer.view;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -20,12 +21,20 @@ import android.widget.Toast;
 import com.derek.helloanthy.sexyphotoviewer.R;
 import com.derek.helloanthy.sexyphotoviewer.model.WebsiteModel;
 import com.derek.helloanthy.sexyphotoviewer.parser.WebsiteParser;
+import com.derek.helloanthy.sexyphotoviewer.view.website.WebsiteFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
+//import android.app.Fragment;
+//import android.app.FragmentManager;
 
-public class HomeActivity extends Activity {
+//import android.support.v4.app.ActionBarDrawerToggle;
+//import android.support.v4.app.Fragment;
+//import android.support.v4.widget.DrawerLayout;
+
+
+public class HomeActivity extends Activity implements WebsiteFragment.OnFragmentInteractionListener {
     private static int PAGE_STEP = 10; // 10 pages as a step
     private static String TAG = "homeActivity";
     public static Context context;
@@ -43,7 +52,7 @@ public class HomeActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_home);
-        setContentView(R.layout.drawerlayout);
+        setContentView(R.layout.main_layout);
         context = this;
         websiteLinks = this.getResources().getStringArray(R.array.website);
         websiteLinkList = new ArrayList<String>();
@@ -61,7 +70,6 @@ public class HomeActivity extends Activity {
                 R.layout.website_list_item, websiteLinkList));
         // Set the list's click listener
         websiteListView.setOnItemClickListener(new DrawerItemClickListener());
-        //mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         myTasks = new ArrayList<MyTask>();
         websiteModels = new ArrayList<WebsiteModel>();
@@ -75,18 +83,21 @@ public class HomeActivity extends Activity {
                 R.string.drawer_close  /* "close drawer" description for accessibility */
         ) {
             public void onDrawerClosed(View view) {
-                getActionBar().setTitle("onDrawerClosed");
+                //getActionBar().setTitle("onDrawerClosed");
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
             public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle("onDrawerOpened");
+                //getActionBar().setTitle("onDrawerOpened");
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
         websiteListDrawer.setDrawerListener(websiteListDrawerToggle);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
+
+        // request website data (categories ect)
+        requestData(websiteLinks);
     }
 
     protected boolean isOnline() {
@@ -103,6 +114,7 @@ public class HomeActivity extends Activity {
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -113,7 +125,7 @@ public class HomeActivity extends Activity {
             if (isOnline()){
                 requestData(websiteLinks);
             } else {
-                Toast.makeText(this, "Network unavaliable", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Network unavailable", Toast.LENGTH_LONG).show();
             }
             Log.v(TAG, "get_data clicked");
 
@@ -130,23 +142,63 @@ public class HomeActivity extends Activity {
 
 
             default:
-                Toast.makeText(this, "get all! id:" + id, Toast.LENGTH_LONG).show();
+
                 return super.onOptionsItemSelected(item);
         }
     }
-    private void requestData(String... uri){
+    private boolean requestData(String... uri){
+        boolean ifSuccess = false;
         MyTask newTask = new MyTask();
-        newTask.execute(websiteLinks);
+        try {
+            websiteModels = newTask.execute(websiteLinks).get();
+            ifSuccess = true;
+        } catch (Exception e){
+            Log.e(TAG, e.getMessage());
+            websiteModels = null;
+        } finally {
+
+        }
+        return ifSuccess;
     }
+
+    @Override
+    public List<WebsiteModel> getWebsiteModel() {
+        if (websiteModels == null){
+            requestData(websiteLinks);
+        }
+        return websiteModels;
+    }
+
     /* The click listner for ListView in the navigation drawer */
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+    public class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            //Log.v(TAG, "DrawerItemClicked");
             selectItem(position);
         }
     }
     private void selectItem(int position) {
-        // update the main content by replacing fragments
+        if (position == -1){
+            // get all info
+        } else {
+            // update the main content by replacing fragments
+            Fragment fragment = new WebsiteFragment();
+            Bundle args = new Bundle();
+            args.putInt("position", position);
+            //args.putString(WebsiteFragment.wm);
+            fragment.setArguments(args);
+
+//        FragmentManager fragmentManager = getFragmentManager();
+//        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+            getFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
+        }
+
+
+//        update selected item and title, then close the drawer
+//        mDrawerList.setItemChecked(position, true);
+//        setTitle(mPlanetTitles[position]);
+//        mDrawerLayout.closeDrawer(mDrawerList);
+        setTitle("position:" + position);
         Log.v(TAG, "Selected item at position: " + position);
         websiteListDrawer.closeDrawer(websiteListView);
     }
@@ -178,7 +230,8 @@ public class HomeActivity extends Activity {
         @Override
         protected void onPostExecute(List<WebsiteModel> websiteModels) {
             //super.onPostExecute(s);
-            Log.v(TAG, websiteLinks.length - myTasks.size() + 1 + "/" + websiteLinks.length + " webpages loaded");
+//            Log.v(TAG, websiteLinks.length - myTasks.size() + 1 + "/" + websiteLinks.length + " webpages loaded");
+
             if (myTasks.size() == 0){
                 Log.v(TAG, "all web pages loaded");
             }
