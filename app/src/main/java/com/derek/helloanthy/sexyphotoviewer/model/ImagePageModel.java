@@ -13,7 +13,7 @@ public class ImagePageModel {
     private int id;
 
     private String pageLink;
-    private List<URL> bitmapLinks;
+    private List<URL> imageLinks;
     private List<Bitmap> bitmaps;
 
 }
