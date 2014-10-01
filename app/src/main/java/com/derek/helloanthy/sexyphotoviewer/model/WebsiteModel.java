@@ -8,6 +8,7 @@ import java.util.Map;
  * Created by derek on 19/09/14.
  */
 public class WebsiteModel {
+    private static String TAG = "WebsiteModel";
     private String uri = null;
     private String charset = "UTF-8";
     private String title;
@@ -16,7 +17,37 @@ public class WebsiteModel {
     //private Map<String, List<URL>> categories = null;
     //private List<CategoryModel> categories;
     private Map<String, CategoryModel> categoryMap = null;
+    private List<CategoryModel> categoryList = null;
+/*
+    public List<CategoryModel> getCategoryList() {
+        return categoryList;
+    }
 
+    public void setCategoryList(List<CategoryModel> categoryList) {
+        this.categoryList = categoryList;
+    }
+    public CategoryModel getCategory(int index){
+        CategoryModel cm = null;
+        try {
+            cm = categoryList.get(index);
+        } catch (NullPointerException e){
+            throw e;
+        } catch (Exception e){
+            Log.e(TAG, e.getMessage());
+        }
+        return  cm;
+    }
+    public void setCategoryModel(int index, CategoryModel cm){
+        categoryList.set(index, cm);
+    }
+    public void addCategoryModel(CategoryModel cm){
+        categoryList.add(cm);
+    }
+    public void addCategoryModel(int index, CategoryModel cm){
+        categoryList.add(index, cm);
+    }*/
+
+    ///////////// NOT SURE Should use list or LinkedHashMap
     public Map<String, CategoryModel> getCategoryMap() {
         return categoryMap;
     }
@@ -28,6 +59,8 @@ public class WebsiteModel {
     public List<String> getCategories() {
         return new ArrayList<String>(categoryMap.keySet());
     }
+
+
 
     public String getCharset() {
         return charset;

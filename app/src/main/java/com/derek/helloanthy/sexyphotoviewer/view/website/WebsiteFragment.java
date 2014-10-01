@@ -13,9 +13,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.derek.helloanthy.sexyphotoviewer.R;
+import com.derek.helloanthy.sexyphotoviewer.model.CategoryModel;
+import com.derek.helloanthy.sexyphotoviewer.model.ImagePageModel;
 import com.derek.helloanthy.sexyphotoviewer.model.WebsiteModel;
 
 import java.util.List;
@@ -59,6 +64,17 @@ public class WebsiteFragment extends Fragment implements ActionBar.TabListener{
     }*/
 
     private OnFragmentInteractionListener mListener;
+    /**
+     * The fragment's ListView/GridView.
+     */
+    private AbsListView mListView;
+
+    /**
+     * The Adapter which will be used to populate the ListView/GridView with
+     * Views.
+     */
+    private ListAdapter mAdapter;
+
 
     /**
      * Use this factory method to create a new instance of
@@ -143,7 +159,10 @@ public class WebsiteFragment extends Fragment implements ActionBar.TabListener{
         if (position != 0){
             wm = WebsiteFragment.wml.get(position-1);
         }
-
+        List<ImagePageModel> list = ((CategoryModel)wm.getCategoryMap().values().toArray()[0]).getImagePageModelList();
+        // set up the adapter
+        mAdapter = new ArrayAdapter<ImagePageModel>(getActivity(),
+                android.R.layout.simple_list_item_1,wm.getCategoryMap().values().toArray(new CategoryModel[0])[0].getImagePageModelList());
     }
 
     @Override

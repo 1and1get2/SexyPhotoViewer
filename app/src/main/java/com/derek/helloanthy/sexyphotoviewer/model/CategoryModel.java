@@ -1,7 +1,6 @@
 package com.derek.helloanthy.sexyphotoviewer.model;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by derek on 21/09/14.
@@ -10,10 +9,27 @@ public class CategoryModel {
     //private URL url;
     private String uri;
     //private WebsiteModel websiteModel;
-    private String category;
-    private Map<Integer, List<ImagePageModel>> ImagePageMap; // imagepage links on every page
+    private String categoryName;
+    private int currentPageNumber;
+//    private Map<Integer, List<ImagePageModel>> ImagePageMap; // imagepage links on every page
+    private List<ImagePageModel> imagePageModelList;
 
-//    public URL getUrl() {
+    public List<ImagePageModel> getImagePageModelList() {
+        return imagePageModelList;
+    }
+
+    public void setImagePageModelList(List<ImagePageModel> imagePageModelList) {
+        this.imagePageModelList = imagePageModelList;
+    }
+
+    public int getCurrentPageNumber() {
+        return currentPageNumber;
+    }
+
+    public void setCurrentPageNumber(int currentPageNumber) {
+        this.currentPageNumber = currentPageNumber;
+    }
+    //    public URL getUrl() {
 //        return url;
 //    }
 //
@@ -29,24 +45,17 @@ public class CategoryModel {
     public void setUri(String uri) {
         this.uri = uri;
     }
-    public String getPage(int page){
+    public String getPageUri(int page){
         int position = uri.lastIndexOf('.');
         return uri.substring(0,position) + "_" + page + uri.substring(position);
     }
 
-    public String getCategory() {
-        return category;
+    public String getCategoryName() {
+        return categoryName;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
-    public Map<Integer, List<ImagePageModel>> getImagePageMap() {
-        return ImagePageMap;
-    }
-
-    public void setImagePageMap(Map<Integer, List<ImagePageModel>> imagePageMap) {
-        ImagePageMap = imagePageMap;
-    }
 }

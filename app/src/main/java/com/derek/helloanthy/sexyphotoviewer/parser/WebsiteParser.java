@@ -13,7 +13,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,16 +34,15 @@ public class WebsiteParser {
         wm.setUrl(uri);
         wm.setWebsiteContent(websiteContent);
         wm.setCategoryMap(parseCategoryMap(webDoc, uri, photoTableKeyword));
-
+//        wm.setCategoryList(parseCategoryList(webDoc, uri));
 
 
         Map<String, CategoryModel> categoryMap = new HashMap<String, CategoryModel>();
 
         return wm;
     }
-    private static Map<String, CategoryModel> parseCategoryMap(
-            Document webDoc, String uri, String[] photoTableKeyword){
-        Map<String, CategoryModel> categoryMap = new HashMap<String, CategoryModel>();
+    private static List<CategoryModel> parseCategoryList(Document webDoc, String uri, String...  photoTableKeyword){
+        List<CategoryModel> list = new ArrayList<CategoryModel>();
         // find photo row
         Element photoTable = null;
         for (Element e : webDoc.getElementsByTag("ul")){
@@ -66,7 +68,49 @@ public class WebsiteParser {
 //                Log.v(TAG, categoryName/*.substring(0, categoryName.length() - 4)*/ + ": " + categoryUrl);
                 CategoryModel category = new CategoryModel();
                 category.setUri(categoryUrl);
-                category.setCategory(categoryName);
+                category.setCategoryName(categoryName);
+                //test:
+                //Log.v(TAG, "test for pages 25:" + category.getPage(25));
+                //categoryMap.put(categoryName, category);
+                list.add(category);
+            }
+        }catch (Exception ex){
+            Log.e(TAG, "failed to get children elements");
+        }finally {
+
+        }
+        return list;
+    }
+    private static Map<String, CategoryModel> parseCategoryMap(
+            Document webDoc, String uri, String[] photoTableKeyword){
+        Map<String, CategoryModel> categoryMap = new LinkedHashMap<String, CategoryModel>();
+        // find photo row
+        Element photoTable = null;
+        for (Element e : webDoc.getElementsByTag("ul")){
+            if (ifContainString(e, photoTableKeyword)){
+                photoTable = e;
+                Log.v(TAG, "found element: " + e.text());
+                // assume there is only one table that satisfies
+                break;
+            } else {
+                continue;
+            }
+        }
+        Elements children = null;
+        try{
+            children = photoTable.children();
+//            Log.v(TAG, "children: " + children.text());
+            // ignore the first element (0)
+            for (int i = 1; i < children.size(); i++){
+//                categoryMap.put()
+                String categoryName = children.get(i).text();
+                //Element e = children.get(i).select("li").get(0).select("a[href]").get(0);
+                String categoryUrl = uri + children.get(i).select("li").get(0).select("a[href]").get(0).attr("href");
+//                Log.v(TAG, categoryName/*.substring(0, categoryName.length() - 4)*/ + ": " + categoryUrl);
+                CategoryModel category = new CategoryModel();
+                category.setUri(categoryUrl);
+                category.setCategoryName(categoryName);
+                //TODO: parse ImagePages list
                 //test:
                 //Log.v(TAG, "test for pages 25:" + category.getPage(25));
                 categoryMap.put(categoryName, category);

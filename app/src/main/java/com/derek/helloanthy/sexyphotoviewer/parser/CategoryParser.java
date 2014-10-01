@@ -8,7 +8,7 @@ import java.util.Map;
  * Created by derek on 20/09/14.
  */
 public class CategoryParser {
-    public static CategoryModel parse(CategoryModel cat){
+    public static CategoryModel parse(CategoryModel cm){
         return null;
     }
     public static Map<String, CategoryModel> parseMap(){
