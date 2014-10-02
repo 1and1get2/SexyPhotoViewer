@@ -18,12 +18,18 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.derek.helloanthy.sexyphotoviewer.R;
 import com.derek.helloanthy.sexyphotoviewer.model.WebsiteModel;
 import com.derek.helloanthy.sexyphotoviewer.parser.WebsiteParser;
 import com.derek.helloanthy.sexyphotoviewer.view.website.WebsiteFragment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 //import android.app.Fragment;
@@ -38,6 +44,7 @@ public class HomeActivity extends Activity implements WebsiteFragment.OnFragment
     private static int PAGE_STEP = 10; // 10 pages as a step
     private static String TAG = "homeActivity";
     public static Context context;
+    public static RequestQueue requestQueue;
 
     private String[] websiteLinks;
     private List<String> websiteLinkList;
@@ -57,9 +64,11 @@ public class HomeActivity extends Activity implements WebsiteFragment.OnFragment
         websiteLinks = this.getResources().getStringArray(R.array.website);
         websiteLinkList = new ArrayList<String>();
         websiteLinkList.add(getResources().getString(R.string.get_all_websites));
-        for (String s : websiteLinks){
+        websiteLinkList.addAll(Arrays.asList(websiteLinks));
+/*        for (String s : websiteLinks){
             websiteLinkList.add(s);
-        }
+        }*/
+        requestQueue = Volley.newRequestQueue(this);
         websiteListDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         websiteListView = (ListView) findViewById(R.id.left_drawer);
 
@@ -123,7 +132,22 @@ public class HomeActivity extends Activity implements WebsiteFragment.OnFragment
         int id = item.getItemId();
         if (id == R.id.get_data){
             if (isOnline()){
-                requestData(websiteLinks);
+//                requestData(websiteLinks);
+                requestQueue.add(new StringRequest(
+                        websiteLinks[0],
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                Log.v(TAG, "Volley Response: \n" + response);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.e(TAG, "Volley Error\n" + error.getMessage());
+                            }
+                        }
+                ));
             } else {
                 Toast.makeText(this, "Network unavailable", Toast.LENGTH_LONG).show();
             }
@@ -147,6 +171,7 @@ public class HomeActivity extends Activity implements WebsiteFragment.OnFragment
         }
     }
     private boolean requestData(String... uri){
+        if (uri == null) uri = websiteLinks;
         boolean ifSuccess = false;
         MyTask newTask = new MyTask();
         try {
@@ -206,7 +231,7 @@ public class HomeActivity extends Activity implements WebsiteFragment.OnFragment
     class MyTask extends AsyncTask<String, Integer, List<WebsiteModel>>{
         @Override
         protected List<WebsiteModel> doInBackground(String... params) {
-            int size = params.length;
+//            int size = params.length;
             for (int i = 0; i < params.length; i++){
                 WebsiteModel wm;
                 wm = WebsiteParser.parser(params[i]);
